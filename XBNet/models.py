@@ -91,7 +91,7 @@ class XBNETClassifier(torch.nn.Module):
         Instantiates and trains a XGBRegressor on the first layer of the neural network to set its feature importances
          as the weights of the layer
         '''
-        self.temp1 = XGBClassifier(n_estimators=100).fit(self.X, self.y,eval_metric="mlogloss").feature_importances_
+        self.temp1 = XGBClassifier(n_estimators=100,use_label_encoder=False).fit(self.X, self.y,eval_metric="mlogloss").feature_importances_
         self.temp = self.temp1
         for i in range(1, self.input_out_dim):
             self.temp = np.column_stack((self.temp, self.temp1))

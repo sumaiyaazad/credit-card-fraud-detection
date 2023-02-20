@@ -9,9 +9,11 @@ from XBNet.run import run_XBNET
 
 data = pd.read_csv('creditcard.csv')
 print(data.shape)
-x_data = data[data.columns[1:-1]]
+x_data = data[data.columns[1:3]]
+x_data = x_data.head(10)
 print(x_data.shape)
 y_data = data[data.columns[-1]]
+y_data = y_data.head(10)
 print(y_data.shape)
 le = LabelEncoder()
 y_data = np.array(le.fit_transform(y_data))
@@ -23,5 +25,5 @@ model = XBNETClassifier(X_train,y_train,1)
 criterion = torch.nn.CrossEntropyLoss()
 optimizer = torch.optim.Adam(model.parameters(), lr=0.01)
 
-m,acc, lo, val_ac, val_lo = run_XBNET(X_train,X_test,y_train,y_test,model,criterion,optimizer,32,300)
+m,acc, lo, val_ac, val_lo = run_XBNET(X_train,X_test,y_train,y_test,model,criterion,optimizer,32,5)
 print(predict(m,x_data.to_numpy()[0,:]))
