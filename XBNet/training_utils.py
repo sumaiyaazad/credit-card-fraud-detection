@@ -3,9 +3,9 @@ from sklearn.metrics import classification_report,r2_score,mean_absolute_error,m
 import matplotlib.pyplot as plt
 import torch
 from tqdm import tqdm
+import csv
 
-
-def training(model,trainDataload,testDataload,criterion,optimizer,epochs = 100,save = False):
+def training(model,trainDataload,testDataload,criterion,optimizer,epochs = 100,save = True):
     '''
     Training function for training the model with the given data
     :param model(XBNET Classifier/Regressor): model to be trained
@@ -21,6 +21,10 @@ def training(model,trainDataload,testDataload,criterion,optimizer,epochs = 100,s
     lossing = []
     val_acc = []
     val_loss = []
+    header = ['epoch','Training accuracy','Training Loss','Validation accuracy','Validation Loss']
+    file = open('accuracy_file.csv','w')
+    writer=csv.writer(file,lineterminator='\n')
+    writer.writerow(header)
     for epochs in tqdm(range(epochs),desc="Percentage training completed: "):
         running_loss = 0
         predictions = []
@@ -80,15 +84,23 @@ def training(model,trainDataload,testDataload,criterion,optimizer,epochs = 100,s
         lossing.append(running_loss/len(trainDataload))
         if model.name == "Classification":
             accuracy.append(100 * correct / total)
-            print("Training Loss after epoch {} is {} and Accuracy is {}".format(epochs + 1,
-                                                                                 running_loss / len(trainDataload),
-                                                                                 100 * correct / total))
+            #print("Training Loss after epoch {} is {} and Accuracy is {}".format(epochs + 1,
+            #                                                                     running_loss / len(trainDataload),
+            #                                                                     100 * correct / total))
         else:
             accuracy.append(100*r2_score(out.detach().numpy(),predicted.detach().numpy()))
-            print("Training Loss after epoch {} is {} and Accuracy is {}".format(epochs+1,running_loss/len(trainDataload),accuracy[-1]))
+            #print("Training Loss after epoch {} is {} and Accuracy is {}".format(epochs+1,running_loss/len(trainDataload),accuracy[-1]))
         v_l,v_a = validate(model,testDataload,criterion,epochs)
+        
+        
+        print(f'epoch : {epochs+1}')
+        print(f'Training accuracy   : {accuracy[-1]:.4f}  |  Training Loss : {lossing[-1]:.4f}')
+        print(f'validation accuracy : {v_a[-1]:.4f}  |  Validation Loss : {float(v_l[-1]):.4f}')
         val_acc.extend(v_a)
         val_loss.extend(v_l)
+        
+        row = [epochs+1 , accuracy[-1],lossing[-1],v_a[-1],float(v_l[-1])]
+        writer.writerow(row)
     if model.name == "Classification":
         print(classification_report(np.array(act),np.array(predictions)))
     else:
@@ -96,12 +108,13 @@ def training(model,trainDataload,testDataload,criterion,optimizer,epochs = 100,s
         print("Mean Absolute error Score: ", mean_absolute_error(np.array(act),np.array(predictions)))
         print("Mean Squared error Score: ", mean_squared_error(np.array(act),np.array(predictions)))
         print("Root Mean Squared error Score: ", np.sqrt(mean_squared_error(np.array(act),np.array(predictions))))
-    validate(model,testDataload,criterion,epochs,True)
+    #validate(model,testDataload,criterion,epochs,True)
 
-    model.feature_importances_ = torch.nn.Softmax(dim=0)(model.layers["0"].weight[1]).detach().numpy()
-
+    #model.feature_importances_ = torch.nn.Softmax(dim=0)(model.layers["0"].weight[1]).detach().numpy()
+    
     figure, axis = plt.subplots(2)
     figure.suptitle('Performance of XBNET')
+    
 
     axis[0].plot(accuracy, label="Training Accuracy")
     axis[0].plot(val_acc, label="Testing Accuracy")
@@ -115,13 +128,16 @@ def training(model,trainDataload,testDataload,criterion,optimizer,epochs = 100,s
     axis[1].plot(val_loss, label="Testing Loss")
     axis[1].set_xlabel('Epochs')
     axis[1].set_ylabel('Loss value')
-    axis[1].set_title("XBNet Loss")
+    axis[1].set_title("XBNet Loss ")
     axis[1].legend()
-    if save == True:
-        plt.savefig("Training_graphs.png")
+    
+    plt.savefig("Training_graphs.png")
+    """if save == True:
+        
     else:
-        plt.show()
-
+        plt.show()"""
+    
+    
     return accuracy,lossing,val_acc,val_loss
 
 
@@ -172,6 +188,7 @@ def validate(model,testDataload,criterion,epochs,last=False):
         predictions.extend(predicted.detach().numpy())
         act.extend(out.detach().numpy())
     lossing.append(valid_loss / len(testDataload))
+    
     if model.name == "Classification":
         accuracy.append(100 * correct / total)
     else:
@@ -184,13 +201,16 @@ def validate(model,testDataload,criterion,epochs,last=False):
             print("Mean Absolute error Score: ", mean_absolute_error(np.array(act), np.array(predictions)))
             print("Mean Squared error Score: ", mean_squared_error(np.array(act), np.array(predictions)))
             print("Root Mean Squared error Score: ", np.sqrt(mean_squared_error(np.array(act), np.array(predictions))))
-    if model.name == "Classification":
+    """if model.name == "Classification":
         print("Validation Loss after epoch {} is {} and Accuracy is {}".format(epochs+1, valid_loss / len(testDataload),
                                                                                100 * correct / total))
+        
+                                                                              
     else:
         print("Validation Loss after epoch {} is {} and Accuracy is {}".format(epochs+1, valid_loss / len(testDataload),
-                                                                               100*r2_score(np.array(act), np.array(predictions))))
-    return lossing, accuracy
+                                                                                   100*r2_score(np.array(act), np.array(predictions))))
+    """
+    return lossing,   accuracy
 
 def predict(model,X):
     '''
