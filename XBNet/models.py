@@ -28,7 +28,7 @@ class XBNETClassifier(torch.nn.Module):
         self.y = y_values
         self.gui = input_through_cmd
         self.inputs_layers_gui = inputs_for_gui
-
+        self.last_layer = None
         self.take_layers_dim()
         self.base_tree()
 
@@ -40,6 +40,10 @@ class XBNETClassifier(torch.nn.Module):
         self.sequential = Seq(self.layers)
         self.sequential.give(self.xg, self.num_layers_boosted)
         self.feature_importances_ = None
+        
+
+    def get_params(self):
+        return self.num_layers,self.last_layer
 
     def get(self, l):
         '''
@@ -79,12 +83,14 @@ class XBNETClassifier(torch.nn.Module):
             print("Enter your last layer ")
             self.ch = int(input("1. Sigmoid \n2. Softmax \n3. None \n"))
             if self.ch == 1:
+                self.last_layer = 'sigmoid'
                 self.layers[str(self.num_layers)] = torch.nn.Sigmoid()
             elif self.ch == 2:
                 dimension = int(input("Enter dimension for Softmax: "))
                 self.layers[str(self.num_layers)] = torch.nn.Softmax(dim=dimension)
-            else:
-                pass
+                self.last_layer = 'softmax'
+            elif self.ch == 3:
+                self.last_layer = 'none'
 
     def base_tree(self):
         '''

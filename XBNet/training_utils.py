@@ -3,8 +3,8 @@ from sklearn.metrics import classification_report,r2_score,mean_absolute_error,m
 import matplotlib.pyplot as plt
 import torch
 from tqdm import tqdm
-import csv
-from sklearn.metrics import classification_report, confusion_matrix,ConfusionMatrixDisplay
+import csv,os
+from sklearn.metrics import classification_report, confusion_matrix,ConfusionMatrixDisplay,accuracy_score,f1_score
 
 def training(model,trainDataload,testDataload,criterion,optimizer,epochs = 100,save = True):
     '''
@@ -23,7 +23,13 @@ def training(model,trainDataload,testDataload,criterion,optimizer,epochs = 100,s
     val_acc = []
     val_loss = []
     header = ['epoch','Training accuracy','Training Loss','Validation accuracy','Validation Loss']
-    file = open('accuracy_file.csv','w')
+    p = model.get_params()
+    my_path = format(os.getcwd())
+    my_path = os.path.join(my_path,'result/xbnet')
+    my_file = f'accuracy_tarining_layer='+str(p[0])+'_'+str(p[1])+'.csv'
+    filename = os.path.join(my_path,my_file)
+    
+    file = open(filename,'w')
     writer=csv.writer(file,lineterminator='\n')
     writer.writerow(header)
     for epochs in tqdm(range(epochs),desc="Percentage training completed: "):
@@ -131,8 +137,12 @@ def training(model,trainDataload,testDataload,criterion,optimizer,epochs = 100,s
     axis[1].set_ylabel('Loss value')
     axis[1].set_title("XBNet Loss ")
     axis[1].legend()
-    
-    plt.savefig("Training_graphs.png")
+    # Figures out the absolute path for you in case your working directory moves around.
+    p= model.get_params()
+    my_file = f'Training_graph_layer='+str(p[0])+'_'+str(p[1])+'.png'
+    filename = os.path.join(my_path,my_file)
+    print(filename,'-----------fpng')
+    plt.savefig(filename)
     """if save == True:
         
     else:
@@ -234,21 +244,42 @@ def test(model,X,y):
         
     else:
         y_pred = y_pred.detach().numpy()[0]
+
+    
     
     report =  classification_report(y_test,y_pred)
 
     print(report)
-
-    with open('classification_report_xbnet_test.txt','w') as file:
+    my_path = format(os.getcwd())
+    my_path = os.path.join(my_path,'result/xbnet')
+    
+    my_file = f'classification_report_xbnet_test.txt'
+    filename = os.path.join(my_path,my_file)
+    with open(filename,'w') as file:
         file.write(report)
 
+    acc = accuracy_score(y_test , y_pred)
+    f1_scr = f1_score(y_test , y_pred , average='macro')
+    print('Test accuracy : ',acc,' | f1-score(macro) : ',f1_scr)
+
+    
+    file = open('./result/test_result_xbnet.csv','a')
+    writer=csv.writer(file,lineterminator='\n')
+    params = model.get_params()
+    layers = params[0]
+    last_layer = params[1]
+    row = [layers,last_layer,acc,f1_scr]
+    writer.writerow(row)
+    file.close()
+
     cm = confusion_matrix(y_test,y_pred)
-    np.savetxt('confusion_matrix_xbnet.txt',cm, fmt='%d')
     labels = [0,1]
     cm_display = ConfusionMatrixDisplay(confusion_matrix = cm, display_labels =labels)
     cm_display.plot()
-    plt.title('confusion matrix')
-    plt.savefig('confusion_matrix_xbnet.png')
+    plt.title(f'confusion matrix xbnet layer = {layers} {last_layer}')
+    my_file = f'confusion_matrix_xbnet layer = {layers} {last_layer}.png'
+    filename = os.path.join(my_path,my_file)
+    plt.savefig(filename)
 
 def predict(model,X):
     '''

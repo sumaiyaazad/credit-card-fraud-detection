@@ -39,5 +39,5 @@ def run_XBNET(X_train,X_test,y_train,y_test,model,
     trainDataload = DataLoader(Data(X_train, y_train), batch_size=batch_size)
     testDataload = DataLoader(Data(X_test, y_test), batch_size=batch_size)
     acc, lo, val_ac, val_lo = training(model, trainDataload, testDataload,
-                                       criterion, optimizer, epochs,save= save)
+                                       criterion, optimizer,epochs,save= save)
     return model,acc, lo, val_ac, val_lo
