@@ -17,6 +17,7 @@ class Data(Dataset):
 
     def __getitem__(self, idx):
         return self.X[idx], self.y[idx]
+    
 
 def run_XBNET(X_train,X_test,y_train,y_test,model,
               criterion,optimizer,batch_size = 16,epochs=100, save = False):

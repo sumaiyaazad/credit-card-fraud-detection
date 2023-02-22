@@ -4,6 +4,7 @@ import matplotlib.pyplot as plt
 import torch
 from tqdm import tqdm
 import csv
+from sklearn.metrics import classification_report, confusion_matrix,ConfusionMatrixDisplay
 
 def training(model,trainDataload,testDataload,criterion,optimizer,epochs = 100,save = True):
     '''
@@ -160,9 +161,12 @@ def validate(model,testDataload,criterion,epochs,last=False):
     act = []
     correct = 0
     total = 0
+    
+    
     for inp, out in testDataload:
         model.get(out.float())
         y_pred = model(inp.float(), train=False)
+        
         if model.labels == 1:
             loss = criterion(y_pred, out.view(-1, 1).float())
         else:
@@ -212,6 +216,40 @@ def validate(model,testDataload,criterion,epochs,last=False):
     """
     return lossing,   accuracy
 
+
+def test(model,X,y):
+    X = torch.from_numpy(X)
+    y_pred = model(X.float(), train=False)
+    
+    y_test = torch.from_numpy(y)
+    
+    if model.name == "Classification":
+        if model.labels == 1:
+            if y_pred < torch.Tensor([0.5]):
+                y_pred = 0
+            else:
+                y_pred = 1
+        else:            
+            y_pred = np.argmax(y_pred.detach().numpy(),axis=1)
+        
+    else:
+        y_pred = y_pred.detach().numpy()[0]
+    
+    report =  classification_report(y_test,y_pred)
+
+    print(report)
+
+    with open('classification_report_xbnet_test.txt','w') as file:
+        file.write(report)
+
+    cm = confusion_matrix(y_test,y_pred)
+    np.savetxt('confusion_matrix_xbnet.txt',cm, fmt='%d')
+    labels = [0,1]
+    cm_display = ConfusionMatrixDisplay(confusion_matrix = cm, display_labels =labels)
+    cm_display.plot()
+    plt.title('confusion matrix')
+    plt.savefig('confusion_matrix_xbnet.png')
+
 def predict(model,X):
     '''
     Predicts the output given the correct input data
@@ -222,13 +260,14 @@ def predict(model,X):
     '''
     X = torch.from_numpy(X)
     y_pred = model(X.float(), train=False)
+    
     if model.name == "Classification":
         if model.labels == 1:
             if y_pred < torch.Tensor([0.5]):
                 y_pred = 0
             else:
                 y_pred = 1
-        else:
+        else:            
             y_pred = np.argmax(y_pred.detach().numpy(),axis=1)
         return y_pred
     else:
