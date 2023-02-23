@@ -17,8 +17,8 @@ data = pd.read_csv("creditcard.csv")
 
 X = data.drop(['Time','Class'],axis=1)
 Y = data['Class']
-X = X.head(100)
-Y = Y.head(100)
+#X = X.head(100)
+#Y = Y.head(100)
 X['Amount'] = X['Amount'].apply(lambda x: (x - X['Amount'].mean())/X['Amount'].std())
 
 x_train,x_test,y_train,y_test=train_test_split(X,Y,test_size=0.3)

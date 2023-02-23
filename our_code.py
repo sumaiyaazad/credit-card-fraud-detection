@@ -12,8 +12,8 @@ data = pd.read_csv("creditcard.csv")
 
 x_data = data.drop(['Time','Class'],axis=1)
 y_data = data['Class']
-x_data = x_data.head(100)
-y_data = y_data.head(100)
+#x_data = x_data.head(100)
+#y_data = y_data.head(100)
 x_data['Amount'] = x_data['Amount'].apply(lambda x: (x - x_data['Amount'].mean())/x_data['Amount'].std())
 le = LabelEncoder()
 y_data = np.array(le.fit_transform(y_data))
