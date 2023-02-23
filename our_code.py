@@ -8,33 +8,29 @@ from XBNet.models import XBNETClassifier,XBNETRegressor
 from XBNet.run import run_XBNET
 import pickle,os
 
-data = pd.read_csv('creditcard.csv')
-print(data.shape)
-x_data = data[data.columns[1:-1]].head(100)
+data = pd.read_csv("creditcard.csv")
+
+x_data = data.drop(['Time','Class'],axis=1)
+y_data = data['Class']
+x_data = x_data.head(100)
+y_data = y_data.head(100)
 x_data['Amount'] = x_data['Amount'].apply(lambda x: (x - x_data['Amount'].mean())/x_data['Amount'].std())
-
-print(x_data.head())
-
-print(x_data.shape)
-y_data = data[data.columns[-1]].head(100)
-
-print(y_data.shape)
 le = LabelEncoder()
 y_data = np.array(le.fit_transform(y_data))
-
+print(x_data.head())
+X_train,X_test,y_train,y_test = train_test_split(x_data.to_numpy(),y_data,test_size = 0.2,random_state = 0)
+X_train,X_valid,y_train,y_valid = train_test_split(x_data.to_numpy(),y_data,test_size = 0.1,random_state = 0)
 layer = 1
 
 
 
-X_train,X_test,y_train,y_test = train_test_split(x_data.to_numpy(),y_data,test_size = 0.2,random_state = 0)
-X_train,X_valid,y_train,y_valid = train_test_split(x_data.to_numpy(),y_data,test_size = 0.1,random_state = 0)
 model = XBNETClassifier(X_train,y_train,layer)
 
 
 criterion = torch.nn.CrossEntropyLoss()
 optimizer = torch.optim.Adam(model.parameters(), lr=0.01)
 
-m,acc, lo, val_ac, val_lo = run_XBNET(X_train,X_valid,y_train,y_valid,model,criterion,optimizer,32,3)
+m,acc, lo, val_ac, val_lo = run_XBNET(X_train,X_valid,y_train,y_valid,model,criterion,optimizer,32,20)
 
 params = m.get_params()
 

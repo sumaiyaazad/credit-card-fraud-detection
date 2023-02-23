@@ -246,28 +246,32 @@ def test(model,X,y):
         y_pred = y_pred.detach().numpy()[0]
 
     
-    
+    params = model.get_params()
+    layers = params[0]
+    last_layer = params[1]
     report =  classification_report(y_test,y_pred)
 
     print(report)
     my_path = format(os.getcwd())
     my_path = os.path.join(my_path,'result/xbnet')
     
-    my_file = f'classification_report_xbnet_test.txt'
-    filename = os.path.join(my_path,my_file)
-    with open(filename,'w') as file:
-        file.write(report)
 
     acc = accuracy_score(y_test , y_pred)
     f1_scr = f1_score(y_test , y_pred , average='macro')
     print('Test accuracy : ',acc,' | f1-score(macro) : ',f1_scr)
 
+
+    my_file = f'classification_report_xbnet_test{params[0]}_{params[1]}.txt'
+    filename = os.path.join(my_path,my_file)
+    with open(filename,'w') as file:
+        file.write(report)
+        file.write(f'\nlayer : {layers}     last layer : {last_layer}')
+        file.write(f'\n\nTest accuracy : {acc}   |   f1-score(macro) : {f1_scr}')
+    
     
     file = open('./result/test_result_xbnet.csv','a')
     writer=csv.writer(file,lineterminator='\n')
-    params = model.get_params()
-    layers = params[0]
-    last_layer = params[1]
+    
     row = [layers,last_layer,acc,f1_scr]
     writer.writerow(row)
     file.close()

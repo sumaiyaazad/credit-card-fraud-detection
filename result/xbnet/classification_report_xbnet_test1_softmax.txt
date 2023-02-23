@@ -1,0 +1,11 @@
+              precision    recall  f1-score   support
+
+           0       1.00      1.00      1.00        20
+
+    accuracy                           1.00        20
+   macro avg       1.00      1.00      1.00        20
+weighted avg       1.00      1.00      1.00        20
+
+layer : 1     last layer : softmax
+
+Test accuracy : 1.0   |   f1-score(macro) : 1.0

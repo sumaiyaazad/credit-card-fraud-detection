@@ -1,0 +1,11 @@
+              precision    recall  f1-score   support
+
+           0       1.00      0.99      0.99      2989
+           1       0.22      1.00      0.37        11
+
+    accuracy                           0.99      3000
+   macro avg       0.61      0.99      0.68      3000
+weighted avg       1.00      0.99      0.99      3000
+
+naive bias run number : 1
+Test accuracy : 0.9873333333333333  | f1-score(macro) : 0.6801346801346801
