@@ -17,35 +17,35 @@ y_data = data['Class']
 x_data['Amount'] = x_data['Amount'].apply(lambda x: (x - x_data['Amount'].mean())/x_data['Amount'].std())
 le = LabelEncoder()
 y_data = np.array(le.fit_transform(y_data))
-print(x_data.head())
-X_train,X_test,y_train,y_test = train_test_split(x_data.to_numpy(),y_data,test_size = 0.2,random_state = 0)
-X_train,X_valid,y_train,y_valid = train_test_split(x_data.to_numpy(),y_data,test_size = 0.1,random_state = 0)
+
+X_train,X_test,y_train,y_test = train_test_split(x_data,y_data,test_size = 0.3,random_state = 0)
+print(X_train.head())
+print(X_test.head())
+X_train,X_valid,y_train,y_valid = train_test_split(x_data,y_data,test_size = 0.1,random_state = 0)
 layer = 1
 
 
 
-model = XBNETClassifier(X_train,y_train,layer)
+model = XBNETClassifier(X_train.to_numpy(),y_train,layer)
 
 
 criterion = torch.nn.CrossEntropyLoss()
 optimizer = torch.optim.Adam(model.parameters(), lr=0.01)
 
-m,acc, lo, val_ac, val_lo = run_XBNET(X_train,X_valid,y_train,y_valid,model,criterion,optimizer,32,20)
+m,acc, lo, val_ac, val_lo = run_XBNET(X_train.to_numpy(),X_valid.to_numpy(),y_train,y_valid,model,criterion,optimizer,32,20)
 
-params = m.get_params()
+params = model.get_params()
+
 
 my_path = format(os.getcwd())
 my_path = os.path.join(my_path,'result/xbnet')
 my_file = f'xbnet_model_layer={params[0]}_{params[1]}.pkl'
 filename = os.path.join(my_path,my_file)
 file = open(filename,'wb')
-pickle.dump(m,file)
+pickle.dump(model,file)
 file.close()
 
 loaded_model = pickle.load(open(filename,'rb'))
 print('---test form our code --')
-test(loaded_model,X_test,y_test)
-"""print('------------------')
-print(x_data.to_numpy()[0,:])
-print('------------')
-print(predict(m,x_data.to_numpy()))"""
+test(loaded_model,X_test.to_numpy(),y_test)
+

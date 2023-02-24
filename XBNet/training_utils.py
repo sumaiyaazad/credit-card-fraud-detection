@@ -4,8 +4,9 @@ import matplotlib.pyplot as plt
 import torch
 from tqdm import tqdm
 import csv,os
-from sklearn.metrics import classification_report, confusion_matrix,ConfusionMatrixDisplay,accuracy_score,f1_score
-
+from sklearn.metrics import classification_report, confusion_matrix,ConfusionMatrixDisplay,accuracy_score,f1_score,precision_score,recall_score
+from sklearn.metrics import average_precision_score, precision_recall_curve
+from sklearn.metrics import auc, plot_precision_recall_curve
 def training(model,trainDataload,testDataload,criterion,optimizer,epochs = 100,save = True):
     '''
     Training function for training the model with the given data
@@ -255,24 +256,35 @@ def test(model,X,y):
     my_path = format(os.getcwd())
     my_path = os.path.join(my_path,'result/xbnet')
     
-
+    #calculate metrices
     acc = accuracy_score(y_test , y_pred)
+    precision, recall, thresholds = precision_recall_curve(y_test, y_pred)
+        
+    # Use AUC function to calculate the area under the curve of precision recall curve
+    auc_precision_recall = auc(recall, precision)
+
     f1_scr = f1_score(y_test , y_pred , average='macro')
-    print('Test accuracy : ',acc,' | f1-score(macro) : ',f1_scr)
+    p = precision_score(y_test,y_pred,average ='macro')
+    r = recall_score(y_test,y_pred,average='macro')
+    print(f'Test accuracy : {acc}  | f1-score(macro) : {f1_scr} ')
+    print(f'Area under precision recall curve : {auc_precision_recall}')
+    print(f'p:{p} | r: {r}')
 
 
     my_file = f'classification_report_xbnet_test{params[0]}_{params[1]}.txt'
     filename = os.path.join(my_path,my_file)
     with open(filename,'w') as file:
         file.write(report)
-        file.write(f'\nlayer : {layers}     last layer : {last_layer}')
-        file.write(f'\n\nTest accuracy : {acc}   |   f1-score(macro) : {f1_scr}')
+        file.write(f'\nlayers: {layers}     |   last_layer : {last_layer}\n')
+        file.write(f'\nTest accuracy : {acc}  |     f1-score(macro) : {f1_scr}\n')
+        file.write(f'\nprecision     : {p}  |   recall  :  {r}\n ')
+        file.write(f'\nArea under precision recall curve : {auc_precision_recall}')
     
     
     file = open('./result/test_result_xbnet.csv','a')
     writer=csv.writer(file,lineterminator='\n')
     
-    row = [layers,last_layer,acc,f1_scr]
+    row = [layers,last_layer,"{:.4f}".format(acc),"{:.4f}".format(p),"{:.4f}".format(r),"{:.4f}".format(f1_scr),"{:.4f}".format(auc_precision_recall)]
     writer.writerow(row)
     file.close()
 
@@ -284,6 +296,9 @@ def test(model,X,y):
     my_file = f'confusion_matrix_xbnet layer = {layers} {last_layer}.png'
     filename = os.path.join(my_path,my_file)
     plt.savefig(filename)
+
+
+
 
 def predict(model,X):
     '''

@@ -1,0 +1,7 @@
+layer,last layer,accuracy,f1_score(macro),,,model,accuracy,f1_score
+1,sigmoid,0.999403111,0.913991932,,,decision tree,0.9993,0.8962
+1,none,0.9993504,0.90496553,,,knn,0.9994,0.9072
+,,,,,,random forest,0.9994,0.9156
+,,,,,,passive aggressive classifier,0.9991,0.8756
+,,,,,,sgd 3,0.9991,0.8676
+,,,,,,svm 2,0.9993,0.9077

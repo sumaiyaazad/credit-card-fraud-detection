@@ -1,12 +1,16 @@
               precision    recall  f1-score   support
 
-           0       1.00      1.00      1.00     56861
-           1       0.84      0.78      0.81       101
+           0       1.00      1.00      1.00     85296
+           1       0.78      0.78      0.78       147
 
-    accuracy                           1.00     56962
-   macro avg       0.92      0.89      0.90     56962
-weighted avg       1.00      1.00      1.00     56962
+    accuracy                           1.00     85443
+   macro avg       0.89      0.89      0.89     85443
+weighted avg       1.00      1.00      1.00     85443
 
+layers: 1     |   last_layer : none
 
-layer 1 none
-Test accuracy :  0.9993504441557529  | f1-score(macro) :  0.9049655377346644
+Test accuracy : 0.9992392589211521  |     f1-score(macro) : 0.8896399943208402
+
+precision     : 0.8883259292471438  |   recall  :  0.8909630185782811
+ 
+Area under precision recall curve : 0.7798572354410331

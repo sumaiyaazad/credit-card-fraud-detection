@@ -1,4 +1,4 @@
-layer,last layer,accuracy,f1_score(macro)
-1,sigmoid,0.999403110845827,0.9139919320528855
-1,softmax,1.0,1.0
-1,softmax,1.0,1.0
+layer,last_layer,accuracy,precision,recall,f1_score,auc_pr
+1,sigmoid,0.9994,0.9294,0.8944,0.9112,0.8244
+1,softmax,0.9994,0.9201,0.8944,0.9069,0.8150
+1,none,0.9992,0.8883,0.8910,0.8896,0.7799

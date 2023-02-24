@@ -1,0 +1,11 @@
+model,accuracy,precision,recall,f1_scr,auc_pr
+Decision Tree,0.9993,0.9079,0.8774,0.892,0.7858
+K-Nearest Neighbors,0.9994,0.9688,0.8605,0.9076,0.8298
+Passive Aggressive Classifier,0.999,0.8875,0.7822,0.8265,0.6705
+Random Forest,0.9995,0.9746,0.8843,0.9247,0.8593
+Stochastic Gradient Descent,0.9991,0.9303,0.7958,0.8506,0.727
+Support Vector Machine,0.9994,0.9189,0.8876,0.9027,0.8071
+xbnet(sigmoid),0.9994,0.9294,0.8944,0.9112,0.8244
+xbnet(softmax),0.9994,0.9201,0.8944,0.9069,0.815
+xbnet(none),0.9992,0.8883,0.891,0.8896,0.7799
+Ensemble,0.9995,0.9526,0.8911,0.9196,0.8441
