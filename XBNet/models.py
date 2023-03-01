@@ -81,7 +81,7 @@ class XBNETClassifier(torch.nn.Module):
                     self.input_out_dim = out
                 self.labels = out
             print("Enter your last layer ")
-            self.ch = int(input("1. Sigmoid \n2. Softmax \n3. None \n"))
+            self.ch = int(input("1. Sigmoid \n2. Softmax \n3. None \n4. ReLU\n"))
             if self.ch == 1:
                 self.last_layer = 'sigmoid'
                 self.layers[str(self.num_layers)] = torch.nn.Sigmoid()
@@ -91,6 +91,9 @@ class XBNETClassifier(torch.nn.Module):
                 self.last_layer = 'softmax'
             elif self.ch == 3:
                 self.last_layer = 'none'
+            elif self.ch == 4:
+                self.last_layer = 'ReLU'
+                self.layers[str(self.num_layers)] = torch.nn.ReLU(inplace = False)
 
     def base_tree(self):
         '''
